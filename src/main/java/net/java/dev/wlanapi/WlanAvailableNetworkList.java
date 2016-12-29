@@ -16,6 +16,7 @@
 package net.java.dev.wlanapi;
 
 import java.util.Arrays;
+import java.util.Formatter;
 import java.util.List;
 
 import com.sun.jna.Native;
@@ -96,7 +97,7 @@ public class WlanAvailableNetworkList extends Structure
     		Network[i].dot11DefaultCipherAlgorithm = p.getInt(616+628*i);
     		Network[i].dwFlags = p.getInt(620+628*i);
     		Network[i].dwReserved = p.getPointer(624+628*i);
-    	}
+		}
     	//read();
     }
 
