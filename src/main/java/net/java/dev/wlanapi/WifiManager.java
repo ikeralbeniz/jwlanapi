@@ -233,21 +233,20 @@ public class WifiManager
 		return scanResults;
 	}
 	
-	public void connect(String targetNetworkType, String targetNetworkProfile)
+	public int connect(String targetNetworkType, String targetNetworkProfile)
 	{
 		WlanConnectionParameters.ByReference wlanConnPara = new WlanConnectionParameters.ByReference();
 		PDot11Ssid pDot11Ssid = new PDot11Ssid();
 		String type = targetNetworkType;
-		int dwError;
-		
+
 		//set the connection mode (connecting using a profile)
 		wlanConnPara.wlanConnectionMode = 0;
 		//set the profile name
 		wlanConnPara.strProfile = new WString(targetNetworkProfile);
 		//set the SSID
 		pDot11Ssid.dot11Ssid = new Dot11Ssid.ByReference();
-		pDot11Ssid.dot11Ssid.ucSSID = targetNetworkType.getBytes();
-		pDot11Ssid.dot11Ssid.uSSIDLength = targetNetworkType.length();
+		pDot11Ssid.dot11Ssid.ucSSID = targetNetworkProfile.getBytes();
+		pDot11Ssid.dot11Ssid.uSSIDLength = targetNetworkProfile.length();
 
 		wlanConnPara.pDot11Ssid = pDot11Ssid;
 		
@@ -262,8 +261,7 @@ public class WifiManager
 		}
 		else
 		{
-			dwError = 1;
-			return;
+			return 1;
 		}
 		
 		//the desired BSSID list is empty
@@ -271,7 +269,7 @@ public class WifiManager
 		//no connection flags
 		wlanConnPara.dwFlags = 0;
 		
-		dwError = WlanApi.INSTANCE.WlanConnect(
+		return WlanApi.INSTANCE.WlanConnect(
 				hClient.getValue(),
 				interfaceGuid.getPointer(),
 				wlanConnPara,
