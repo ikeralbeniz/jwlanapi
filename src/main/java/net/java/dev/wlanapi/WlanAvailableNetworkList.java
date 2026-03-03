@@ -15,13 +15,11 @@
  *******************************************************************************/
 package net.java.dev.wlanapi;
 
-import java.util.Arrays;
-import java.util.Formatter;
-import java.util.List;
-
-import com.sun.jna.Native;
 import com.sun.jna.Pointer;
 import com.sun.jna.Structure;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Contains an array of information about available networks.
@@ -84,19 +82,19 @@ public class WlanAvailableNetworkList extends Structure
     		Network[i].dot11Ssid = new Dot11Ssid();
     		Network[i].dot11Ssid.uSSIDLength = p.getInt(520+628*i);
     		Network[i].dot11Ssid.ucSSID = p.getByteArray(524+628*i, Network[i].dot11Ssid.uSSIDLength);
-    		Network[i].dot11BssType = p.getInt(548+628*i);
-    		Network[i].uNumberOfBssids = p.getInt(552+628*i);
-    		Network[i].bNetworkConnectable = (p.getInt(556+628*i) != 0);
-    		Network[i].wlanNotConnectableReason = p.getInt(560+628*i);
-    		Network[i].uNumberOfPhyTypes = p.getInt(564+628*i);
-    		Network[i].dot11PhyTypes = p.getIntArray(568+628*i, Network[i].uNumberOfPhyTypes);
-    		Network[i].bMorePhyTypes = (p.getInt(600+628*i) != 0);
-    		Network[i].wlanSignalQuality = p.getInt(604+628*i);
-    		Network[i].bSecurityEnabled = (p.getInt(608+628*i) != 0);
-    		Network[i].dot11DefaultAuthAlgorithm = p.getInt(612+628*i);
-    		Network[i].dot11DefaultCipherAlgorithm = p.getInt(616+628*i);
-    		Network[i].dwFlags = p.getInt(620+628*i);
-    		Network[i].dwReserved = p.getPointer(624+628*i);
+    		Network[i].dot11BssType = p.getInt(556 + 628*i);
+    		Network[i].uNumberOfBssids = p.getInt(560+628*i);
+    		Network[i].bNetworkConnectable = (p.getInt(564+628*i) != 0);
+    		Network[i].wlanNotConnectableReason = p.getInt(568+628*i);
+    		Network[i].uNumberOfPhyTypes = p.getInt(572+628*i);
+    		Network[i].dot11PhyTypes = p.getIntArray(576+628*i, Network[i].uNumberOfPhyTypes);
+    		Network[i].bMorePhyTypes = (p.getInt(608+628*i) != 0);
+    		Network[i].wlanSignalQuality = p.getInt(612+628*i);
+    		Network[i].bSecurityEnabled = (p.getInt(616+628*i) != 0);
+			Network[i].dot11DefaultAuthAlgorithm = p.getInt(620 + 628 * i);
+    		Network[i].dot11DefaultCipherAlgorithm = p.getInt(624+628*i);
+    		Network[i].dwFlags = p.getInt(628+628*i);
+    		Network[i].dwReserved = p.getPointer(632+628*i);
 		}
     	//read();
     }
@@ -106,4 +104,3 @@ public class WlanAvailableNetworkList extends Structure
 		return Arrays.asList("dwNumberOfItems", "dwIndex", "Network");
 	}
 }
-

@@ -15,17 +15,21 @@
  *******************************************************************************/
 package net.java.dev.wlanapi;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
-
 import com.sun.jna.Pointer;
 import com.sun.jna.WString;
 import com.sun.jna.platform.win32.Guid;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.PointerByReference;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 public class WifiManager
 {
@@ -220,13 +224,21 @@ public class WifiManager
 			}
 			
 			String ssid = new String(Arrays.copyOfRange(pAvailableNetworkList.Network[i].dot11Ssid.ucSSID, 0, ssidArrayLength));
-			String bssid = Integer.toString(pAvailableNetworkList.Network[i].uNumberOfBssids);
-			String capabilities = Integer.toString(pAvailableNetworkList.Network[i].dot11DefaultAuthAlgorithm)
-					+", "+Integer.toString(pAvailableNetworkList.Network[i].dot11DefaultCipherAlgorithm);
+			Set<Dot11PhyType> phyTypes = new HashSet<>();
+			Arrays.stream(pAvailableNetworkList.Network[i].dot11PhyTypes).forEach(intValue -> {phyTypes.add(Dot11PhyType.findByFlag(intValue));});
 			int level = -100 + (pAvailableNetworkList.Network[i].wlanSignalQuality/2);
 			int frequency = 2400;
 			
-			network = new ScanResult(ssid, bssid, capabilities, level, frequency);
+			network = new ScanResult(
+					ssid,
+					Dot11BssType.findByFlag(pAvailableNetworkList.Network[i].dot11BssType),
+					phyTypes,
+					Integer.toString(pAvailableNetworkList.Network[i].uNumberOfBssids),
+					level,
+					frequency,
+					pAvailableNetworkList.Network[i].bNetworkConnectable,
+					Dot11AuthAlgorithm.findByFlag(pAvailableNetworkList.Network[i].dot11DefaultAuthAlgorithm),
+					Dot11CipherAlgorithm.findByFlag(pAvailableNetworkList.Network[i].dot11DefaultCipherAlgorithm));
 			scanResults.add(network);
 		}
 		
@@ -483,7 +495,7 @@ public class WifiManager
 		}
 	}
 	
-	public String waitForConnect(String ssid, long timeout, TimeUnit unit) throws InterruptedException
+	public String waitForConnect(String ssid, long timeout, TimeUnit unit, String targetNetworkType) throws InterruptedException
 	{
 		String currentSsid = connectedSsid();
 		if (ssid.equals(currentSsid))
@@ -493,7 +505,7 @@ public class WifiManager
 		scan();
 		registerNotification();
 		
-		connect("adhoc", ssid);
+		connect(targetNetworkType, ssid);
 		
 		long timeToWaitInMs = TimeUnit.MILLISECONDS.convert(timeout, unit);
 		long startTime = System.currentTimeMillis();
